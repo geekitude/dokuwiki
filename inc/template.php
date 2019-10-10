@@ -1169,7 +1169,7 @@ function tpl_indexerWebBug() {
     global $ID;
 
     $p           = array();
-    $p['src']    = DOKU_BASE.'lib/exe/taskrunner.php?id='.rawurlencode($ID).
+    $p['src']    = DOKU_BASE.'lib/exe/indexer.php?id='.rawurlencode($ID).
         '&'.time();
     $p['width']  = 2; //no more 1x1 px image because we live in times of ad blockers...
     $p['height'] = 1;
@@ -1675,7 +1675,7 @@ function tpl_flush() {
  *
  * @author Andreas  Gohr <andi@splitbrain.org>
  */
-function tpl_getMediaFile($search, $abs = false, &$imginfo = null) {
+function tpl_getMediaFile($search, $abs = false, &$imginfo = null, $fallback = 'lib/images/blank.gif') {
     $img     = '';
     $file    = '';
     $ismedia = false;
@@ -1691,6 +1691,18 @@ function tpl_getMediaFile($search, $abs = false, &$imginfo = null) {
 
         if(file_exists($file)) break;
     }
+
+	// manage non existing target
+	if(!file_exists($file)) {
+		// give result for fallback image
+		if ($fallback) {
+			$file = $fallback;
+		// stop process if false result is required (if $fallback is false)
+		} else {
+			return false;
+		}
+	}
+
 
     // fetch image data if requested
     if(!is_null($imginfo)) {
